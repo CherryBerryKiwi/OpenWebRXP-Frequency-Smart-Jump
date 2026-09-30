@@ -31,6 +31,7 @@ Plugins.frequency_smart_jump.init = async function () {
             );
             return false;
         }
+		console.log("Frequency Smart Jump - Written by ChatGPT with special support from Pham Hoang Thi - hoangthisd@gmail.com");
     }
 
 
@@ -147,7 +148,7 @@ Plugins.frequency_smart_jump.init = async function () {
             freq - panel.center_freq;
 
 
-        console.log(
+      /*  console.log(
             'frequency_smart_jump tuning:',
             {
                 target: freq,
@@ -155,6 +156,7 @@ Plugins.frequency_smart_jump.init = async function () {
                 offset: offset
             }
         );
+		*/
 
 
         let demod =

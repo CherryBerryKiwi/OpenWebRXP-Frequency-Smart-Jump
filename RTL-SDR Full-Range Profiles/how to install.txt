@@ -1,0 +1,6 @@
+upload to tmp folder for example
+sudo cp /tmp/settings_new.json /var/lib/openwebrx/settings.json
+sudo chown openwebrx:openwebrx /var/lib/openwebrx/settings.json
+sudo systemctl restart openwebrx
+
+may need to wait one minute to restart
