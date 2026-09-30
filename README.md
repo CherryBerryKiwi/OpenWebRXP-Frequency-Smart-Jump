@@ -139,7 +139,7 @@ ls -l /usr/lib/python3/dist-packages/htdocs/plugins/receiver/frequency_smart_jum
 sudo chown root:root \
 /usr/lib/python3/dist-packages/htdocs/plugins/receiver/frequency_smart_jump/frequency_smart_jump.js
 ```
-4 Restart
+4. Restart
 ```
 sudo systemctl restart openwebrx
 ```
