@@ -122,21 +122,72 @@ Plugins.frequency_smart_jump.init = async function () {
     }
 
 
-    function setFrequency(freq) {
+    function tuneExactFrequency(freq) {
 
-        let key =
+        let panel =
             $('#openwebrx-panel-receiver')
-            .demodulatorPanel()
-            .getMagicKey();
+            .data('panel');
 
 
-        ws.send(JSON.stringify({
-            type: 'setfrequency',
-            params: {
-                frequency: freq,
-                key: key
+        if (!panel) {
+            console.log(
+                'frequency_smart_jump: panel unavailable'
+            );
+            return;
+        }
+
+
+        /*
+         * OpenWebRX+ frequency model:
+         * actual = center_freq + offset_frequency
+         *
+         * Keep profile center and tune demodulator offset.
+         */
+        let offset =
+            freq - panel.center_freq;
+
+
+        console.log(
+            'frequency_smart_jump tuning:',
+            {
+                target: freq,
+                center: panel.center_freq,
+                offset: offset
             }
-        }));
+        );
+
+
+        let demod =
+            panel.getDemodulator ?
+            panel.getDemodulator() :
+            panel.demodulator;
+
+
+        if (demod &&
+            typeof demod.set_offset_frequency === 'function') {
+
+            demod.set_offset_frequency(offset);
+
+        } else {
+
+            console.log(
+                'frequency_smart_jump: fallback websocket'
+            );
+
+            let key =
+                $('#openwebrx-panel-receiver')
+                .demodulatorPanel()
+                .getMagicKey();
+
+
+            ws.send(JSON.stringify({
+                type: 'setfrequency',
+                params: {
+                    frequency: freq,
+                    key: key
+                }
+            }));
+        }
 
     }
 
@@ -167,7 +218,7 @@ Plugins.frequency_smart_jump.init = async function () {
 
                     loadProfile(profile)
                     .then(function () {
-                        setFrequency(freq);
+                        tuneExactFrequency(freq);
                     });
 
                 } else {
