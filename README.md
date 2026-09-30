@@ -126,20 +126,20 @@ plugins/receiver/frequency_smart_jump/frequency_smart_jump.js
 
 ## How to edit and update the code
 1. Copy to tmp /tmp/frequency_smart_jump.js
-2. 
+2. Copy and verify
 ```
 sudo cp /tmp/frequency_smart_jump.js \
 /usr/lib/python3/dist-packages/htdocs/plugins/receiver/frequency_smart_jump/
 ```
 ```
 ls -l /usr/lib/python3/dist-packages/htdocs/plugins/receiver/frequency_smart_jump/
-3
 ```
+3. Permission
 ```
 sudo chown root:root \
 /usr/lib/python3/dist-packages/htdocs/plugins/receiver/frequency_smart_jump/frequency_smart_jump.js
 ```
-4
+4 Restart
 ```
 sudo systemctl restart openwebrx
 ```
