@@ -21,7 +21,7 @@ You are free to enter any frequency within the entire range. The plugin automati
 
 ## Installation
 
-Assume these files exist:
+Upload these files to /tmp/:
 
 ```
 /tmp/utils.js
