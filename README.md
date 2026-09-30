@@ -1,5 +1,5 @@
 # OpenWebRX+ Frequency Smart Jump Plugin 
-# Written by ChatGPT with special support from Pham Hoang Thi - hoangthisd@gmail.com
+## Written by ChatGPT with special support from Pham Hoang Thi - hoangthisd@gmail.com
 
 ## Overview
 
