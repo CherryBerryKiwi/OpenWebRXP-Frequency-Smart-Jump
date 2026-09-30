@@ -70,28 +70,7 @@ Content:
 
 `init.js` is loaded as a normal script by OpenWebRX+, so `await` must be inside an async wrapper.
 
-## Local utils dependency
 
-If `frequency_smart_jump.js` contains a remote loader such as:
-
-```javascript
-await Plugins.load(
-'https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js'
-);
-```
-
-remove it.
-
-The `utils` plugin is now loaded locally by `init.js`.
-
-The plugin may simply check:
-
-```javascript
-if (!Plugins.isLoaded('utils', 0.1)) {
-    console.error('utils plugin missing');
-    return false;
-}
-```
 
 ## File permissions
 
