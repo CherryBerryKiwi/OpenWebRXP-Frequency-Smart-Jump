@@ -18,7 +18,7 @@ init.js
  |
  +--> frequency_smart_jump
 ```
-The code has been tested and works well with my RTL-SDR `Full-Range Profiles/settings_new.json`, please check the GitHub repository.
+The code has been tested and works well with my `RTL-SDR Full-Range Profiles/settings_new.json`, please check the GitHub repository.
 
 You are free to enter any frequency within the entire range. The plugin automatically selects a matching SDR profile when the target frequency belongs to an available profile range. If no profile matches, the normal OpenWebRX+ frequency jump behavior is kept.
 
