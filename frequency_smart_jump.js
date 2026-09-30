@@ -97,6 +97,88 @@ Plugins.frequency_smart_jump.init = async function () {
     }
 
 
+    function getDisplayedFrequency() {
+
+        let text = $('.webrx-actual-freq .digit')
+            .map(function () {
+                return $(this).text();
+            })
+            .get()
+            .join('');
+
+        if (!text)
+            return NaN;
+
+        let mhz = parseFloat(text);
+
+        if (!Number.isFinite(mhz))
+            return NaN;
+
+        return mhz * 1000000;
+    }
+
+
+    function waitForFrequencyChange(targetFreq) {
+
+        return new Promise(resolve => {
+
+            let node = document.querySelector('.webrx-actual-freq');
+
+            if (!node) {
+                resolve();
+                return;
+            }
+
+            let initial = getDisplayedFrequency();
+            let observer;
+            let finished = false;
+
+            function done() {
+                if (finished)
+                    return;
+
+                finished = true;
+
+                if (observer)
+                    observer.disconnect();
+
+                resolve();
+            }
+
+            observer = new MutationObserver(function () {
+                let current = getDisplayedFrequency();
+
+                if (!Number.isFinite(current))
+                    return;
+
+                // Profile changes usually move the displayed center frequency.
+                // Continue only after the DOM reports the new value.
+                if (current !== initial && current !== targetFreq) {
+                    done();
+                    return;
+                }
+
+                if (Math.abs(current - targetFreq) < 1) {
+                    done();
+                }
+            });
+
+            observer.observe(node, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+
+        });
+    }
+
+
+    function isCurrentProfile(option) {
+        let selected = $('#openwebrx-sdr-profiles-listbox').val();
+        return selected === $(option).val();
+    }
+
+
     function loadProfile(option) {
 
         return new Promise(resolve => {
@@ -112,7 +194,7 @@ Plugins.frequency_smart_jump.init = async function () {
             $(document).one(
                 'event:profile_changed',
                 function () {
-                    setTimeout(resolve, 300);
+                    waitForFrequencyChange(null).then(resolve);
                 }
             );
 
@@ -242,10 +324,19 @@ Plugins.frequency_smart_jump.init = async function () {
 
                 if (profile) {
 
-                    loadProfile(profile)
-                    .then(function () {
+                    if (isCurrentProfile(profile)) {
+
                         tuneExactFrequency(freq);
-                    });
+
+                    } else {
+
+                        // Wait for the profile's own frequency DOM update instead
+                        // of guessing with a fixed delay.
+                        loadProfile(profile)
+                        .then(function () {
+                            tuneExactFrequency(freq);
+                        });
+                    }
 
                 } else {
 
