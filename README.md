@@ -53,7 +53,7 @@ sudo cp /tmp/frequency_smart_jump.js \
 Create:
 
 ```
-/usr/lib/python3/dist-packages/htdocs/plugins/receiver/init.js
+sudo nano /usr/lib/python3/dist-packages/htdocs/plugins/receiver/init.js
 ```
 
 Content:
