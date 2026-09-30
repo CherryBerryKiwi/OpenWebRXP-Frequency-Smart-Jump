@@ -3,6 +3,8 @@
 
 ## Overview
 
+<video src="https://github.com/user-attachments/assets/edfcebf2-59b3-47bb-abe0-df1bcb1fc1d5"></video>
+
 `frequency_smart_jump` is an OpenWebRX+ receiver plugin that improves frequency jumping behavior.
 
 The plugin works together with a local `utils` plugin.
