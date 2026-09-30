@@ -16,11 +16,13 @@
 
 Plugins.frequency_smart_jump = {};
 Plugins.frequency_smart_jump.no_css = true;
+Plugins.frequency_smart_jump._tuning = false;
 
 
 Plugins.frequency_smart_jump.init = async function () {
-
+	console.log("Frequency Smart Jump - Written by ChatGPT with special support from Pham Hoang Thi - hoangthisd@gmail.com");
     if (!Plugins.isLoaded('utils', 0.1)) {
+		
         await Plugins.load(
             'https://0xaf.github.io/openwebrxplus-plugins/receiver/utils/utils.js'
         );
@@ -31,7 +33,7 @@ Plugins.frequency_smart_jump.init = async function () {
             );
             return false;
         }
-		console.log("Frequency Smart Jump - Written by ChatGPT with special support from Pham Hoang Thi - hoangthisd@gmail.com");
+		
     }
 
 
@@ -125,70 +127,88 @@ Plugins.frequency_smart_jump.init = async function () {
 
     function tuneExactFrequency(freq) {
 
-        let panel =
-            $('#openwebrx-panel-receiver')
-            .data('panel');
-
-
-        if (!panel) {
-            console.log(
-                'frequency_smart_jump: panel unavailable'
-            );
+        // Ignore invalid/failed extreme frequency requests silently.
+        // Do not limit by fixed SDR range because every device is different.
+        if (!Number.isFinite(freq)) {
             return;
         }
 
+        // Prevent recursive loop when hardware rejects the requested tune.
+        if (Plugins.frequency_smart_jump._tuning) {
+            return;
+        }
 
-        /*
-         * OpenWebRX+ frequency model:
-         * actual = center_freq + offset_frequency
-         *
-         * Keep profile center and tune demodulator offset.
-         */
-        let offset =
-            freq - panel.center_freq;
+        Plugins.frequency_smart_jump._tuning = true;
+
+        try {
+
+            let panel =
+                $('#openwebrx-panel-receiver')
+                .data('panel');
 
 
-      /*  console.log(
-            'frequency_smart_jump tuning:',
-            {
-                target: freq,
-                center: panel.center_freq,
-                offset: offset
+            if (!panel) {
+                console.log(
+                    'frequency_smart_jump: panel unavailable'
+                );
+                return;
             }
-        );
-		*/
 
 
-        let demod =
-            panel.getDemodulator ?
-            panel.getDemodulator() :
-            panel.demodulator;
+            /*
+             * OpenWebRX+ frequency model:
+             * actual = center_freq + offset_frequency
+             *
+             * Keep profile center and tune demodulator offset.
+             */
+            let offset =
+                freq - panel.center_freq;
 
 
-        if (demod &&
-            typeof demod.set_offset_frequency === 'function') {
+            let demod =
+                panel.getDemodulator ?
+                panel.getDemodulator() :
+                panel.demodulator;
 
-            demod.set_offset_frequency(offset);
 
-        } else {
+            if (demod &&
+                typeof demod.set_offset_frequency === 'function') {
 
-            console.log(
-                'frequency_smart_jump: fallback websocket'
+                demod.set_offset_frequency(offset);
+
+            } else {
+
+                console.log(
+                    'frequency_smart_jump: fallback websocket'
+                );
+
+                let key =
+                    $('#openwebrx-panel-receiver')
+                    .demodulatorPanel()
+                    .getMagicKey();
+
+
+                ws.send(JSON.stringify({
+                    type: 'setfrequency',
+                    params: {
+                        frequency: freq,
+                        key: key
+                    }
+                }));
+            }
+
+        } catch (e) {
+
+            // Hardware/browser errors are ignored intentionally.
+            console.warn(
+                'frequency_smart_jump: tune ignored',
+                e
             );
 
-            let key =
-                $('#openwebrx-panel-receiver')
-                .demodulatorPanel()
-                .getMagicKey();
+        } finally {
 
+            Plugins.frequency_smart_jump._tuning = false;
 
-            ws.send(JSON.stringify({
-                type: 'setfrequency',
-                params: {
-                    frequency: freq,
-                    key: key
-                }
-            }));
         }
 
     }
@@ -199,6 +219,10 @@ Plugins.frequency_smart_jump.init = async function () {
         'set_offset_frequency',
 
         function (orig, thisArg, args) {
+
+            if (Plugins.frequency_smart_jump._tuning) {
+                return true;
+            }
 
             let offset = Math.round(args[0]);
 
