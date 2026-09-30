@@ -223,7 +223,7 @@ Plugins.frequency_smart_jump.init = async function () {
 
                 } else {
 
-                    setFrequency(freq);
+                    tuneExactFrequency(freq);
 
                 }
 
