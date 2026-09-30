@@ -125,7 +125,7 @@ plugins/receiver/frequency_smart_jump/frequency_smart_jump.js
 ```
 
 ## How to edit and update the code
-1. Copy to tmp /tmp/frequency_smart_jump.js
+1. Upload your version to /tmp/frequency_smart_jump.js
 2. Copy and verify
 ```
 sudo cp /tmp/frequency_smart_jump.js \
